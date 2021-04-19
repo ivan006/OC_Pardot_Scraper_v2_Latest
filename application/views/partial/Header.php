@@ -9,5 +9,10 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
   </head>
-  <body>
-    <div class="container">
+  <body style="background: whitesmoke;">
+    <div class="container" style="margin-top: 1em;">
+      <div class="card">
+        <div class="card-body">
+
+          <h1><?php echo $title ?></h1>
+          <hr>
