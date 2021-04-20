@@ -11,7 +11,7 @@ class Report_c extends CI_Controller
 
 	public function index()
 	{
-		$this->load->view('partial/Header', array("title"=>"Hmmm"));
+		$this->load->view('partial/Header', array("title"=>"Pardot Crawler"));
 		$this->load->view('Report', array("data"=>"data"));
 		$this->load->view('partial/Footer');
 

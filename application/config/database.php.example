@@ -74,22 +74,15 @@ $active_group = 'default';
 $query_builder = TRUE;
 
 $db['default'] = array(
-
-	// 'hostname' => 'sql47.jnb1.host-h.net',
-	// 'username' => 'bluegpyuty_4',
-	// 'password' => 'Jju3wDytmJeFKddZ4N58',
-	// 'database' => 'bluebluegpyuty_db4',
-
-	'hostname' => 'sql44.jnb1.host-h.net',
-	'username' => 'bluegpyuty_5',
-	'password' => '81j96gv7yy3sX0El03s1',
-	'database' => 'onecustom',
-
+	'dsn'	=> '',
+	'hostname' => 'localhost',
+	'username' => '',
+	'password' => '',
+	'database' => '',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
 	'pconnect' => FALSE,
-	// 'db_debug' => (ENVIRONMENT !== 'production'),
-	'db_debug' => FALSE,
+	'db_debug' => (ENVIRONMENT !== 'production'),
 	'cache_on' => FALSE,
 	'cachedir' => '',
 	'char_set' => 'utf8',
