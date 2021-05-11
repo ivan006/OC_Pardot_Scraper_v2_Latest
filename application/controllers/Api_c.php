@@ -65,6 +65,13 @@ class Api_c extends CI_Controller
 		// echo $this->config->item("pardot_user_key");
 		// exit;
 
+
+
+
+
+		// $crawl_needles = $_POST["crawl_needles"];
+		$crawl_needles = $_GET["crawl_needles"];
+
 		$limit = 200;
 		$offset = ($_GET["page"]*$limit)-$limit;
 
@@ -72,7 +79,7 @@ class Api_c extends CI_Controller
 			// code...
 			$request = new HTTP_Request2();
 			// 36802159,36801871
-			$request->setUrl('https://pi.pardot.com/api/visit/version/4/do/query?format=json&prospect_ids='.$_GET["crawl_needles"].'&offset='.$offset);
+			$request->setUrl('https://pi.pardot.com/api/visit/version/4/do/query?format=json&prospect_ids='.$crawl_needles.'&offset='.$offset);
 			$request->setMethod(HTTP_Request2::METHOD_GET);
 			$request->setConfig(array(
 				'follow_redirects' => TRUE
@@ -94,48 +101,72 @@ class Api_c extends CI_Controller
 					// header('Content-Type: application/json');
 					// echo json_encode($data, JSON_PRETTY_PRINT);
 					// exit;
-					$data = $response["result"]["visit"];
+
+					if (isset($response["result"]["visit"])) {
+						$data = $response["result"]["visit"];
 
 
-					// header('Content-Type: application/json');
-					// echo json_encode($data, JSON_PRETTY_PRINT);
-					// exit;
-					//
+						// header('Content-Type: application/json');
+						// echo json_encode($data, JSON_PRETTY_PRINT);
+						// exit;
+						//
 
-					$visitor_page_views = array();
-					foreach ($data as $key => $value) {
+						$visitor_page_views = array();
+						if (isset($data[0])) {
+							foreach ($data as $key => $value) {
 
-						if (isset($value["visitor_page_views"]["visitor_page_view"][0])) {
-							// code...
-							foreach ($value["visitor_page_views"]["visitor_page_view"] as $visit_key => $visit_value) {
+								if (isset($value["visitor_page_views"]["visitor_page_view"][0])) {
+									// code...
+									foreach ($value["visitor_page_views"]["visitor_page_view"] as $visit_key => $visit_value) {
+										// code...
+										$visitor_page_view_entry = $visit_value;
+										$visitor_page_view_entry["visit_id"] = $value["id"];
+										$visitor_page_view_entry["visitor_id"] = $value["visitor_id"];
+
+										$visitor_page_views[] = $visitor_page_view_entry;
+									}
+								} else {
+									// code...
+									$visitor_page_view_entry = $value["visitor_page_views"]["visitor_page_view"];
+									$visitor_page_view_entry["visit_id"] = $value["id"];
+									$visitor_page_view_entry["visitor_id"] = $value["visitor_id"];
+
+									$visitor_page_views[] = $visitor_page_view_entry;
+								}
+
+								unset($data[$key]["visitor_page_views"]);
+
+							}
+						} else {
+							if (isset($data["visitor_page_views"]["visitor_page_view"][0])) {
 								// code...
-								$visitor_page_view_entry = $visit_value;
-								$visitor_page_view_entry["visit_id"] = $value["id"];
-								$visitor_page_view_entry["visitor_id"] = $value["visitor_id"];
+								foreach ($data["visitor_page_views"]["visitor_page_view"] as $visit_key => $visit_value) {
+									// code...
+									$visitor_page_view_entry = $visit_value;
+									$visitor_page_view_entry["visit_id"] = $data["id"];
+									$visitor_page_view_entry["visitor_id"] = $data["visitor_id"];
+
+									$visitor_page_views[] = $visitor_page_view_entry;
+								}
+							} else {
+								// code...
+								$visitor_page_view_entry = $data["visitor_page_views"]["visitor_page_view"];
+								$visitor_page_view_entry["visit_id"] = $data["id"];
+								$visitor_page_view_entry["visitor_id"] = $data["visitor_id"];
 
 								$visitor_page_views[] = $visitor_page_view_entry;
 							}
-						} else {
-							// code...
-							$visitor_page_view_entry = $value["visitor_page_views"]["visitor_page_view"];
-							$visitor_page_view_entry["visit_id"] = $value["id"];
-							$visitor_page_view_entry["visitor_id"] = $value["visitor_id"];
-
-							$visitor_page_views[] = $visitor_page_view_entry;
 						}
 
-						unset($data[$key]["visitor_page_views"]);
+						$result = $this->insert_batch("visit", $data);
 
+
+						// header('Content-Type: application/json');
+						// echo json_encode($visitor_page_views, JSON_PRETTY_PRINT);
+						// exit;
+						$result = $this->insert_batch("visitor_page_view", $visitor_page_views);
+						// echo json_encode($response, JSON_PRETTY_PRINT);
 					}
-
-					$result = $this->insert_batch("visit", $data);
-
-
-					// header('Content-Type: application/json');
-					// echo json_encode($visitor_page_views, JSON_PRETTY_PRINT);
-					// exit;
-					$result = $this->insert_batch("visitor_page_view", $visitor_page_views);
-					// echo json_encode($response, JSON_PRETTY_PRINT);
 
 
 					header('Content-Type: application/json');
